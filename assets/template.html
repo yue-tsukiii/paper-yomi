@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{PAPER_TITLE}} — 精読ノート</title>
+<style>
+:root{
+  --bg:#faf9f7; --card:#ffffff; --ink:#1a1a1a; --ink2:#4a4a4a; --ink3:#8a8a8a;
+  --line:#e4e1dc; --accent:#b45309; --accent-soft:#fef3e2;
+  --en-bg:#f5f7fa; --en-ink:#2c3e50; --ja-bg:#ffffff;
+  --ok:#166534; --warn:#b45309; --bad:#b91c1c;
+  --mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,monospace;
+  --sans:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;
+}
+@media(prefers-color-scheme:dark){
+  :root{--bg:#16150f;--card:#1e1d17;--ink:#eceae4;--ink2:#b8b5ac;--ink3:#7d7a72;
+        --line:#332f26;--accent:#f0a854;--accent-soft:#2a2317;
+        --en-bg:#191d24;--en-ink:#c7d3e0;--ja-bg:#1e1d17;
+        --ok:#6ee7a8;--warn:#f0a854;--bad:#f87171;}
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--sans);
+     line-height:1.85;font-size:15px;-webkit-font-smoothing:antialiased}
+.wrap{max-width:1180px;margin:0 auto;padding:0 24px 120px}
+
+/* ---------- header ---------- */
+header.hero{padding:56px 0 32px;border-bottom:2px solid var(--line);margin-bottom:8px}
+.badges{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px}
+.badge{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;
+       padding:5px 11px;border-radius:999px;background:var(--accent-soft);color:var(--accent);
+       border:1px solid color-mix(in srgb,var(--accent) 30%,transparent)}
+.badge.plain{background:transparent;color:var(--ink3);border-color:var(--line)}
+h1.title-en{font-size:29px;line-height:1.35;margin:0 0 6px;font-weight:700;letter-spacing:-.01em}
+h1 .title-ja{display:block;font-size:19px;color:var(--ink2);font-weight:600;margin-top:10px;line-height:1.5}
+.authors{font-size:13px;color:var(--ink3);margin:16px 0 4px;line-height:1.7}
+.affil{font-size:12.5px;color:var(--ink3)}
+.links{margin-top:14px;display:flex;gap:16px;flex-wrap:wrap;font-size:13px}
+.links a{color:var(--accent);text-decoration:none;border-bottom:1px solid transparent}
+.links a:hover{border-bottom-color:var(--accent)}
+
+/* ---------- TL;DR ---------- */
+.tldr{background:var(--accent-soft);border-left:4px solid var(--accent);
+      padding:20px 24px;border-radius:0 8px 8px 0;margin:32px 0}
+.tldr h2{margin:0 0 10px;font-size:13px;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.tldr p{margin:0;font-size:15.5px;line-height:1.9}
+
+/* ---------- nav ---------- */
+nav.toc{position:sticky;top:0;background:color-mix(in srgb,var(--bg) 92%,transparent);
+        backdrop-filter:blur(10px);border-bottom:1px solid var(--line);
+        padding:12px 0;margin-bottom:40px;z-index:50;display:flex;gap:20px;
+        overflow-x:auto;font-size:13px;white-space:nowrap}
+nav.toc a{color:var(--ink2);text-decoration:none;font-weight:500}
+nav.toc a:hover{color:var(--accent)}
+
+/* ---------- sections ---------- */
+section{margin:56px 0}
+h2.sec{font-size:13px;letter-spacing:.12em;text-transform:uppercase;color:var(--accent);
+       margin:0 0 6px;font-weight:700}
+h2.sec .pass{color:var(--ink3);font-weight:500;text-transform:none;letter-spacing:0;margin-left:8px}
+h3.sech{font-size:23px;margin:0 0 8px;font-weight:700;letter-spacing:-.01em}
+.sec-lead{color:var(--ink2);font-size:14px;margin:0 0 28px;padding-bottom:20px;border-bottom:1px solid var(--line)}
+h4{font-size:16.5px;margin:36px 0 14px;font-weight:700;
+   padding-left:12px;border-left:3px solid var(--accent)}
+h5{font-size:14.5px;margin:26px 0 10px;font-weight:700;color:var(--ink2)}
+
+/* ---------- ★ bilingual 2-column pair ---------- */
+.pair{display:grid;grid-template-columns:1fr 1fr;gap:0;margin:20px 0;
+      border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.pair > .en{background:var(--en-bg);color:var(--en-ink);padding:18px 20px;
+            font-size:14px;line-height:1.75;border-right:1px solid var(--line)}
+.pair > .ja{background:var(--ja-bg);padding:18px 20px;font-size:14.5px;line-height:1.9}
+.pair .lbl{display:block;font-size:10px;font-weight:700;letter-spacing:.1em;
+           text-transform:uppercase;color:var(--ink3);margin-bottom:8px}
+.pair .cite{display:block;margin-top:10px;font-size:11.5px;color:var(--ink3);font-style:italic}
+.pair.q > .en{font-family:Georgia,"Times New Roman",serif;font-size:14.5px}
+@media(max-width:860px){
+  .pair{grid-template-columns:1fr}
+  .pair > .en{border-right:none;border-bottom:1px solid var(--line)}
+}
+
+/* ---------- 5C grid ---------- */
+.cgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px;margin:24px 0}
+.ccard{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:16px 18px}
+.ccard .k{font-size:11px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+          color:var(--accent);margin-bottom:8px}
+.ccard .k small{display:block;color:var(--ink3);font-weight:500;text-transform:none;
+                letter-spacing:0;margin-top:2px;font-size:11px}
+.ccard p{margin:0;font-size:13.5px;line-height:1.8;color:var(--ink2)}
+
+/* ---------- tables ---------- */
+table{width:100%;border-collapse:collapse;margin:20px 0;font-size:13.5px;
+      background:var(--card);border:1px solid var(--line);border-radius:8px;overflow:hidden}
+th{background:var(--en-bg);color:var(--ink2);text-align:left;padding:11px 14px;
+   font-weight:700;font-size:12px;letter-spacing:.04em;border-bottom:1px solid var(--line)}
+td{padding:11px 14px;border-bottom:1px solid var(--line);vertical-align:top;line-height:1.7}
+tr:last-child td{border-bottom:none}
+td.num{font-family:var(--mono);font-size:13px;white-space:nowrap}
+td .term-en{font-family:var(--mono);font-size:12.5px;color:var(--en-ink);
+            background:var(--en-bg);padding:1px 6px;border-radius:4px}
+
+/* ---------- callouts ---------- */
+.note{border-radius:8px;padding:16px 20px;margin:22px 0;font-size:14px;line-height:1.85;
+      border:1px solid var(--line);background:var(--card)}
+.note .nt{display:block;font-size:11px;font-weight:700;letter-spacing:.08em;
+          text-transform:uppercase;margin-bottom:8px}
+.note.crit{border-left:4px solid var(--bad)} .note.crit .nt{color:var(--bad)}
+.note.good{border-left:4px solid var(--ok)}  .note.good .nt{color:var(--ok)}
+.note.warn{border-left:4px solid var(--warn)}.note.warn .nt{color:var(--warn)}
+.note.fig {border-left:4px solid var(--ink3)}.note.fig  .nt{color:var(--ink3)}
+.note ul{margin:8px 0 0;padding-left:20px} .note li{margin:5px 0}
+
+/* ---------- math ---------- */
+.eq{background:var(--en-bg);border:1px solid var(--line);border-radius:8px;
+    padding:16px 20px;margin:18px 0;font-family:var(--mono);font-size:13.5px;
+    line-height:2;overflow-x:auto;color:var(--en-ink)}
+.eq .where{display:block;margin-top:12px;padding-top:12px;border-top:1px dashed var(--line);
+           font-family:var(--sans);font-size:13px;color:var(--ink2)}
+
+/* ---------- misc ---------- */
+code{font-family:var(--mono);font-size:.88em;background:var(--en-bg);
+     padding:2px 6px;border-radius:4px;color:var(--en-ink)}
+ul,ol{padding-left:22px} li{margin:7px 0;line-height:1.85}
+p{margin:14px 0}
+details{background:var(--card);border:1px solid var(--line);border-radius:8px;
+        padding:14px 18px;margin:18px 0}
+summary{cursor:pointer;font-weight:700;font-size:14px}
+footer{margin-top:80px;padding-top:28px;border-top:1px solid var(--line);
+       font-size:12.5px;color:var(--ink3);line-height:1.9}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+<header class="hero">
+  <div class="badges">
+    <span class="badge">{{AWARD}}</span>
+    <span class="badge plain">{{VENUE}}</span>
+    <span class="badge plain">{{ARXIV_ID}}</span>
+  </div>
+  <h1 class="title-en">{{TITLE_EN}}
+    <span class="title-ja">{{TITLE_JA}}</span>
+  </h1>
+  <div class="authors">{{AUTHORS}}</div>
+  <div class="affil">{{AFFILIATIONS}}</div>
+  <div class="links">{{LINKS}}</div>
+</header>
+
+<div class="tldr">
+  <h2>TL;DR — 一言で言うと</h2>
+  <p>{{TLDR_JA}}</p>
+</div>
+
+<nav class="toc">
+  <a href="#p1">1st pass · 5つのC</a>
+  <a href="#terms">用語</a>
+  <a href="#p2">2nd pass · 手法</a>
+  <a href="#exp">実験</a>
+  <a href="#p3">3rd pass · 仮想再実装</a>
+  <a href="#crit">批判的評価</a>
+  <a href="#ng">4つの問い</a>
+</nav>
+
+<!-- ===== 1st PASS ===== -->
+<section id="p1">
+  <h2 class="sec">First Pass <span class="pass">鳥瞰（5〜10分）</span></h2>
+  <h3 class="sech">5つの C</h3>
+  <p class="sec-lead">Keshav の 3 パス法。Title / Abstract / Intro / 見出し / Conclusion のみから答える。</p>
+
+  <div class="cgrid">
+    <div class="ccard"><div class="k">Category<small>論文の種類</small></div><p>{{C_CATEGORY}}</p></div>
+    <div class="ccard"><div class="k">Context<small>位置づけ</small></div><p>{{C_CONTEXT}}</p></div>
+    <div class="ccard"><div class="k">Correctness<small>前提の妥当性</small></div><p>{{C_CORRECTNESS}}</p></div>
+    <div class="ccard"><div class="k">Contributions<small>主要な貢献</small></div><p>{{C_CONTRIB}}</p></div>
+    <div class="ccard"><div class="k">Clarity<small>記述の明快さ</small></div><p>{{C_CLARITY}}</p></div>
+  </div>
+
+  <h4>Abstract 対訳</h4>
+  <div class="pair q">
+    <div class="en"><span class="lbl">Original (EN)</span>{{ABSTRACT_EN}}</div>
+    <div class="ja"><span class="lbl">日本語訳</span>{{ABSTRACT_JA}}</div>
+  </div>
+</section>
+
+<!-- ===== GLOSSARY ===== -->
+<section id="terms">
+  <h2 class="sec">Terminology <span class="pass">Raff ②：語彙の棚卸し</span></h2>
+  <h3 class="sech">専門用語 EN → JA</h3>
+  <p class="sec-lead">この論文を読むのに必要な用語。定訳がないものは英語のまま扱う。</p>
+  <table>
+    <thead><tr><th style="width:24%">English</th><th style="width:20%">日本語</th><th>解説</th></tr></thead>
+    <tbody>{{GLOSSARY_ROWS}}</tbody>
+  </table>
+</section>
+
+<!-- ===== 2nd PASS ===== -->
+<section id="p2">
+  <h2 class="sec">Second Pass <span class="pass">手法の解剖（〜1時間）</span></h2>
+  <h3 class="sech">何を、どうやっているか</h3>
+  <p class="sec-lead">証明は飛ばし、図・表を軸に手法を追う。</p>
+  {{METHOD_BODY}}
+</section>
+
+<!-- ===== EXPERIMENTS ===== -->
+<section id="exp">
+  <h2 class="sec">Experiments <span class="pass">Raff ③④：実験の再構成と結果要約</span></h2>
+  <h3 class="sech">実験と結果</h3>
+  <p class="sec-lead">著者が実際に何をしたのかを再構成し、数字を検証する。</p>
+  {{EXPERIMENTS_BODY}}
+</section>
+
+<!-- ===== 3rd PASS ===== -->
+<section id="p3">
+  <h2 class="sec">Third Pass <span class="pass">仮想再実装</span></h2>
+  <h3 class="sech">自分で作るとしたら</h3>
+  <p class="sec-lead">著者と同じ前提を置いて頭の中で再現する。数式・ハイパラ・ハード構成を洗い出す。</p>
+  {{REIMPL_BODY}}
+</section>
+
+<!-- ===== CRITIQUE ===== -->
+<section id="crit">
+  <h2 class="sec">Critique <span class="pass">Raff ⑤：全前提を疑う</span></h2>
+  <h3 class="sech">批判的評価</h3>
+  <p class="sec-lead">暗黙の前提・別解釈・弱点・欠落した引用。</p>
+  {{CRITIQUE_BODY}}
+</section>
+
+<!-- ===== NG'S 4 QUESTIONS ===== -->
+<section id="ng">
+  <h2 class="sec">Andrew Ng's Four Questions <span class="pass">読了チェック</span></h2>
+  <h3 class="sech">4つの問いへの回答</h3>
+  <p class="sec-lead">この4問に答えられれば読了。</p>
+  {{NG_BODY}}
+</section>
+
+<footer>
+  {{FOOTER}}
+</footer>
+
+</div>
+</body>
+</html>
